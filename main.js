@@ -96,8 +96,28 @@
           //4 - delete UU
           
           
-          if (! node.data.filled && nodeCount < 100)
+          
+        })
+      },
+      
+      initMouseHandling:function(){
+        // no-nonsense drag and drop (thanks springy.js)
+        var dragged = null;
+
+        // set up a handler object that will initially listen for mousedowns then
+        // for moves and mouseups while dragging
+        var handler = {
+          clicked:function(e){
+            var pos = $(canvas).offset();
+            _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
+            dragged = particleSystem.nearest(_mouseP);
+
+            if (dragged && dragged.node !== null){
+              // while we're dragging, don't let physics move the node
+              dragged.node.fixed = true
+              if (! dragged.node.data.filled && nodeCount < 100)
           {
+            var label = dragged.node.name;
             // rule 1
             if (label.substr(label.length-1) === 'I') {
               sys.addEdge(label, label + 'U');
@@ -122,27 +142,9 @@
               sys.addEdge(label, r4temp);
               nodeCount++;
             }
-            node.data.filled = true;
+            dragged.node.data.filled = true;
             //alert(nodeCount);
           }
-        })
-      },
-      
-      initMouseHandling:function(){
-        // no-nonsense drag and drop (thanks springy.js)
-        var dragged = null;
-
-        // set up a handler object that will initially listen for mousedowns then
-        // for moves and mouseups while dragging
-        var handler = {
-          clicked:function(e){
-            var pos = $(canvas).offset();
-            _mouseP = arbor.Point(e.pageX-pos.left, e.pageY-pos.top)
-            dragged = particleSystem.nearest(_mouseP);
-
-            if (dragged && dragged.node !== null){
-              // while we're dragging, don't let physics move the node
-              dragged.node.fixed = true
             }
 
             $(canvas).bind('mousemove', handler.dragged)
