@@ -90,13 +90,6 @@
             // ctx.fillText(label||"", pt.x, pt.y+4)
             ctx.fillText(label||"", pt.x, pt.y+4)
           }
-          //1 - if last letter is I, add U
-          //2 - if starts with M, duplicate rest of string
-          //3 - III -> U
-          //4 - delete UU
-          
-          
-          
         })
       },
       
@@ -114,10 +107,8 @@
 
             if (dragged && dragged.node !== null){
               // while we're dragging, don't let physics move the node
-              dragged.node.fixed = true
-              if (! dragged.node.data.filled && nodeCount < 100) {
-                fillNode(dragged.node);
-              }
+              dragged.node.fixed = true;
+              fillNode(dragged.node);
             }
 
             $(canvas).bind('mousemove', handler.dragged)
@@ -158,36 +149,39 @@
     return that
   }
   function fillNode(node) {
-    var label = node.name;
-    // rule 1
-    if (label.substr(label.length-1) === 'I') {
-      sys.addEdge(label, label + 'U');
-      nodeCount++;
+    
+    if (! node.data.filled && nodeCount < nodeLimit) {
+        var label = node.name;
+        // rule 1
+        if (label.substr(label.length-1) === 'I') {
+          sys.addEdge(label, label + 'U');
+          nodeCount++;
+        }
+        // rule 2
+        if (label.substr(0,1) === 'M') {
+          sys.addEdge(label, label + label.substr(1));
+          nodeCount++;
+        }
+        // rule 3
+        var r3temp = label;
+        while (r3temp.indexOf('III') != -1) {
+          r3temp = r3temp.replace('III', 'U');
+          sys.addEdge(label, r3temp);
+          nodeCount++;
+        }
+        // rule 4
+        var r4temp = label;
+        while (r4temp.indexOf('UU') != -1) {
+          r4temp = r4temp.replace('UU', '');
+          sys.addEdge(label, r4temp);
+          nodeCount++;
+        }
+        node.data.filled = true;
     }
-    // rule 2
-    if (label.substr(0,1) === 'M') {
-      sys.addEdge(label, label + label.substr(1));
-      nodeCount++;
-    }
-    // rule 3
-    var r3temp = label;
-    while (r3temp.indexOf('III') != -1) {
-      r3temp = r3temp.replace('III', 'U');
-      sys.addEdge(label, r3temp);
-      nodeCount++;
-    }
-    // rule 4
-    var r4temp = label;
-    while (r4temp.indexOf('UU') != -1) {
-      r4temp = r4temp.replace('UU', '');
-      sys.addEdge(label, r4temp);
-      nodeCount++;
-    }
-    node.data.filled = true;
-    //alert(nodeCount);
   }
    var sys = arbor.ParticleSystem(1000, 600, 0.5); // create the system with sensible repulsion/stiffness/friction
     var nodeCount = 1;
+    var nodeLimit = 1000;
   $(document).ready(function(){
     sys.renderer = Renderer("#viewport") // our newly created renderer will have its .init() method called shortly by sys...
 sys.parameters({gravity:true}) // use center-gravity to make the graph settle nicely (ymmv)
