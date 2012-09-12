@@ -165,15 +165,17 @@
         // rule 3
         var r3temp = label;
         while (r3temp.indexOf('III') != -1) {
-          r3temp = r3temp.replace('III', 'U');
-          sys.addEdge(label, r3temp);
+          var newlabel = r3temp.replace('III', 'U').replace(/XXX/g, 'I');
+          r3temp = r3temp.replace('I', 'XXX');
+          sys.addEdge(label, newlabel);
           nodeCount++;
         }
         // rule 4
         var r4temp = label;
         while (r4temp.indexOf('UU') != -1) {
-          r4temp = r4temp.replace('UU', '');
-          sys.addEdge(label, r4temp);
+          var newlabel = r4temp.replace('UU', '').replace(/XXX/g, 'U');
+          r4temp = r4temp.replace('U', 'XXX');
+          sys.addEdge(label, newlabel);
           nodeCount++;
         }
         node.data.filled = true;
